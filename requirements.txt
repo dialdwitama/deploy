@@ -1,7 +1,5 @@
 streamlit
 pandas
-io
-matplotlib.pyplot
+matplotlib
 seaborn
-mlxtend.frequent_patterns
-openpyxl
+mlxtend
