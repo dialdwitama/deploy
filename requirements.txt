@@ -1,0 +1,7 @@
+streamlit
+pandas
+io
+matplotlib.pyplot
+seaborn
+mlxtend.frequent_patterns
+openpyxl
