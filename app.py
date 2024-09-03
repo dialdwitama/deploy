@@ -54,7 +54,7 @@ if uploaded_file:
 
     # Streamlit UI
     st.sidebar.title("Navigasi")
-    menu = st.sidebar.radio("Menu", ["Beranda", "Keterangan Itemset", "Aturan Asosiasi", "Visualisasi Data"])
+    menu = st.sidebar.radio("Menu", ["Dashboard", "Keterangan Pasien Diabetes Melitus", "Analisis Pola Diabetes"])
 
     # Menambahkan deskripsi makna support, confidence, dan lift
     st.sidebar.write("### Penjelasan Istilah")
@@ -62,58 +62,84 @@ if uploaded_file:
     st.sidebar.write("**Confidence**: Kemungkinan kemunculan itemset kedua, jika itemset pertama muncul.")
     st.sidebar.write("**Lift**: Pengukuran seberapa sering itemset muncul bersama-sama dibandingkan dengan ekspektasi jika keduanya independen.")
 
-    if menu == "Beranda":
-        st.title("Selamat Datang di Aplikasi Analisis Data Diabetes (Kab. Ciamis)")
+    if menu == "Dashboard":
+        st.title("Selamat Datang di Platform Analisis Data Diabetes (Kab. Ciamis)")
         st.write("""
         Aplikasi ini memungkinkan Anda untuk melakukan analisis data diabetes menggunakan berbagai teknik analisis data dan visualisasi. 
-        Anda dapat mengakses berbagai menu melalui sidebar untuk melihat data awal, hasil analisis, dan visualisasi data.
+        Anda dapat mengakses berbagai menu melalui sidebar untuk melihat cakupan DM di Kabupaten Ciamis. Berikut adalah distribusi data terkait DM di Kabupaten Ciamis: 
         """)
+
+        st.write("## Data DM Kab. Ciamis")
         
+        plot_type = st.selectbox("Pilih Jenis Visualisasi", ["Rentang Umur", "Gender", "Tipe Diabetes", "Komplikasi"])
+        
+        if plot_type == "Rentang Umur":
+            plt.figure(figsize=(10, 5))
+            sns.countplot(data=df, x='Rentang Umur', palette='viridis')
+            plt.title('Rentang Umur Pasien Diabetes')
+            st.pyplot(plt)
+            
+        elif plot_type == "Gender":
+            plt.figure(figsize=(10, 5))
+            sns.countplot(data=df, x='Gender', palette='viridis')
+            plt.title('Gender')
+            st.pyplot(plt)
+        
+        elif plot_type == "Tipe Diabetes":
+            plt.figure(figsize=(10, 5))
+            sns.countplot(data=df, x='Nama diagnosis ICD 10', palette='viridis')
+            plt.title('Tipe Diabetes')
+            st.pyplot(plt)
+        
+        elif plot_type == "Komplikasi":
+            plt.figure(figsize=(10, 5))
+            sns.countplot(data=df, x='Komplikasi', palette='viridis')
+            plt.title('Komplikasi Pasien Diabetes')
+            st.pyplot(plt)
 
-    elif menu == "Keterangan Itemset":
-        st.title("Keterangan Itemset")
+    elif menu == "Keterangan Pasien Diabetes Melitus":
+        st.title("Keterangan Pasien Diabetes Melitus")
 
-        # Filter hanya itemset yang berisi satu item saja
-        single_itemsets = frequent_itemsets[frequent_itemsets['itemsets'].apply(lambda x: len(x) == 1)].copy()
+        # Filter hanya data yang berisi satu item saja
+        single_items = frequent_itemsets[frequent_itemsets['itemsets'].apply(lambda x: len(x) == 1)].copy()
         
         # Mengubah frozenset menjadi string
-        single_itemsets['itemsets'] = single_itemsets['itemsets'].apply(lambda x: ', '.join(list(x)))  # Gabungkan itemsets menjadi satu string
-        single_itemsets['support'] = (single_itemsets['support'] * 100).round(2).astype(str) + '%'  # Format support dengan persentase
+        total_data_count = len(data)
+        single_items['item'] = single_items['itemsets'].apply(lambda x: ', '.join(list(x)))  # Gabungkan itemsets menjadi satu string
+        single_items['persentase'] = (single_items['support'] * 100).round(2).astype(str) + '%'  # Format support sebagai persentase
+        single_items['jumlah'] = (single_items['support'] * total_data_count).astype(int)  # Menghitung jumlah kemunculan
 
-        # Menyusun ulang kolom agar 'itemsets' muncul sebelum 'support'
-        single_itemsets = single_itemsets[['itemsets', 'support']]
+        # Menyusun ulang kolom agar 'item' muncul sebelum 'percentage' dan 'count'
+        single_items = single_items[['item', 'jumlah', 'persentase']]
 
-        st.write("## Keterangan Itemset dengan Frekuensi Kemunculannya")
-        st.dataframe(single_itemsets)
+        st.dataframe(single_items)
 
         # Tombol download
-        st.download_button("Download Keterangan Itemset", single_itemsets.to_csv(index=False), "frequent_itemsets.csv", "text/csv")
+        st.download_button("Download Keterangan Frekuensi", single_items.to_csv(index=False), "frekuensi_kemunculan.csv", "text/csv")
 
 
-    elif menu == "Aturan Asosiasi":
-        st.title("Aturan Asosiasi")
+    elif menu == "Analisis Pola Diabetes":
+        st.title("Analisis Pola Diabetes")
         
-        st.write("## Aturan Asosiasi")
-        
-        # Filter berdasarkan ukuran itemset
-        itemset_size = st.selectbox("Pilih Ukuran Itemset untuk Aturan Asosiasi", ["1", "2", "3"])
+        # Filter berdasarkan ukuran kelompok
+        kelompok_ukuran = st.selectbox("Jumlah Kondisi Pertama", ["1", "2", "3"])
 
         # Filter berdasarkan kategori (Gender, Age, Type diabetes, Komplikasi)
         categories = {
             'Gender': ['Male', 'Female'],
-            'Age': ['Age_19-34','Age_35-54', 'Age_55-64', 'Age_>65'],
-            'Diabetes Type': ['E10 Type 1 diabetes mellitus', 'E11 Type 2 diabetes mellitus'],
+            'Usia': ['Age_19-34', 'Age_35-54', 'Age_55-64', 'Age_>65'],
+            'Jenis Diabetes': ['E10 Type 1 diabetes mellitus', 'E11 Type 2 diabetes mellitus'],
             'Komplikasi': ['No Complications', 'With Complications']
         }
 
-        selected_gender = st.multiselect("Pilih Gender", categories['Gender'])
-        selected_age = st.multiselect("Pilih Rentang Usia", categories['Age'])
-        selected_diabetes_type = st.multiselect("Pilih Jenis Diabetes", categories['Diabetes Type'])
+        selected_gender = st.multiselect("Pilih Jenis Kelamin", categories['Gender'])
+        selected_age = st.multiselect("Pilih Rentang Usia", categories['Usia'])
+        selected_diabetes_type = st.multiselect("Pilih Jenis Diabetes", categories['Jenis Diabetes'])
         selected_komplikasi = st.multiselect("Pilih Komplikasi", categories['Komplikasi'])
 
-        # Membuat filter aturan
-        def filter_rules(rules):
-            filtered_rules = rules[rules['antecedents'].apply(lambda x: len(x) == int(itemset_size))]
+        # Membuat filter untuk pola yang ditemukan
+        def filter_pola(rules):
+            filtered_rules = rules[rules['antecedents'].apply(lambda x: len(x) == int(kelompok_ukuran))]
 
             if selected_gender:
                 filtered_rules = filtered_rules[filtered_rules['antecedents'].apply(lambda x: any(cat in x for cat in selected_gender)) | 
@@ -130,12 +156,14 @@ if uploaded_file:
 
             return filtered_rules
 
-        filtered_rules = filter_rules(rules)
+        filtered_pola = filter_pola(rules)
+        total_data_count = len(data)
 
-        # Menampilkan aturan dalam persentase dan menambahkan kolom rekomendasi
-        filtered_rules['support'] = (filtered_rules['support'] * 100).round(2).astype(str) + '%'
-        filtered_rules['confidence'] = (filtered_rules['confidence'] * 100).round(2).astype(str) + '%'
-        filtered_rules['Aturan'] = filtered_rules.apply(lambda row: f"Jika {', '.join(list(row['antecedents']))} maka cenderung {', '.join(list(row['consequents']))} ({row['confidence']})", axis=1)
+        # Menampilkan hasil dalam persentase dan menambahkan kolom rekomendasi
+        filtered_pola['Persentase Kemunculan'] = (filtered_pola['support'] * 100).round(2).astype(str) + '%'
+        filtered_pola['Tingkat Kebenaran'] = (filtered_pola['confidence'] * 100).round(2).astype(str) + '%'
+        filtered_pola['Pola'] = filtered_pola.apply(lambda row: f"Jika {', '.join(list(row['antecedents']))}, maka kemungkinan {', '.join(list(row['consequents']))} ({row['Tingkat Kebenaran']})", axis=1)
+        filtered_pola['Jumlah Pasien'] = (filtered_pola['support'] * total_data_count).round().astype(int)
         
         # Menghasilkan rekomendasi berdasarkan aturan yang ditemukan
         def generate_recommendation(row):
@@ -220,26 +248,26 @@ if uploaded_file:
                 return "Pertimbangkan untuk menyesuaikan strategi penanganan berdasarkan aturan yang dihasilkan."
 
         # Tambahkan kolom Rekomendasi ke dataframe
-        filtered_rules['Rekomendasi'] = filtered_rules.apply(generate_recommendation, axis=1)
+        filtered_pola['Rekomendasi'] = filtered_pola.apply(generate_recommendation, axis=1)
         
-        st.write(f"## Aturan Asosiasi dengan Ukuran Itemset {itemset_size}")
-        st.dataframe(filtered_rules[['Aturan', 'support', 'confidence', 'Rekomendasi']])
+        st.write(f"## Pola yang Ditemukan")
+        st.dataframe(filtered_pola[['Pola', 'Tingkat Kebenaran','Jumlah Pasien', 'Rekomendasi']])
+        
         # Mengunduh file Excel
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            filtered_rules[['Aturan', 'support', 'confidence', 'Rekomendasi']].to_excel(writer, index=False, sheet_name='Aturan Asosiasi')
+            filtered_pola[['Pola', 'Tingkat Kebenaran','Jumlah Pasien', 'Rekomendasi']].to_excel(writer, index=False, sheet_name='Pola Diabetes')
         
         st.download_button(
-            label="Unduh Aturan Asosiasi (Excel)",
+            label="Unduh Hasil Analisis Pola (Excel)",
             data=output.getvalue(),
-            file_name='aturan_asosiasi.xlsx',
+            file_name='analisis_pola_diabetes.xlsx',
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
 
 
-
-    elif menu == "Visualisasi Data":
-        st.title("Visualisasi Data")
+    elif menu == "Dashboard":
+        st.title("Dashboard")
         
         st.write("## Distribusi Data")
         
