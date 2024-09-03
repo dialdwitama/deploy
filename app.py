@@ -180,16 +180,33 @@ if uploaded_file:
                     return "Lakukan pemantauan berkala pada pria untuk memastikan tidak mengalami komplikasi."
                 elif "With Complications" in consequents:
                     return "Monitor secara intensif pria yang menunjukkan gejala komplikasi."
+                elif "Age_19-34" in consequents:
+                    return "Pantau usia dewasa muda untuk melakukan pencegahan dini"
+                elif "E10 Type 1 diabetes mellitus" in consequents:
+                    return "Lakukan pemantauan lebih lanjut terhadap pasien pria yang mengalami diabetes tipe 1"
+                elif "E11 Type 2 diabetes mellitus" in consequents:
+                    return "Pertimbangkan tindakan yang lebih tepat terhadap pasien pria yang mengalami diabetes tipe 2"
+                elif "Age_35-54" in consequents:
+                    return "Berikan perhatian khusus pada pria berusia 35-54 tahun untuk deteksi dini."
             
             if "Female" in antecedents:
-                if "Age_35-54" in consequents:
+                if "Age_19-34" in consequents:
+                    return "Pantau usia dewasa muda untuk melakukan pencegahan dini"
+                elif "Age_35-54" in consequents:
                     return "Berikan perhatian khusus pada wanita berusia 35-54 tahun untuk deteksi dini."
+                elif "Age_55-64" in consequents:
+                    return "Tingkatkan pengawasan terhadap pasien wanita di usia produktif"
                 elif "Age_>65" in consequents:
                     return "Prioritaskan pemantauan wanita berusia di atas 65 tahun untuk risiko kesehatan."
                 elif "No Complications" in consequents:
                     return "Pertimbangkan pemantauan tambahan pada wanita untuk mencegah komplikasi."
                 elif "With Complications" in consequents:
                     return "Tingkatkan pengawasan wanita yang mengalami komplikasi."
+                elif "E10 Type 1 diabetes mellitus" in consequents:
+                    return "Lakukan pemantauan lebih lanjut terhadap pasien wanita yang mengalami diabetes tipe 1"
+                elif "E11 Type 2 diabetes mellitus" in consequents:
+                    return "Pertimbangkan tindakan yang lebih tepat terhadap pasien wanita yang mengalami diabetes tipe 2"
+                
             
             # Rekomendasi berdasarkan Age
             if "Age_35-54" in antecedents:
@@ -201,6 +218,10 @@ if uploaded_file:
                     return "Tingkatkan pengawasan terhadap pasien berusia 35-54 tahun yang mengalami diabetes tipe 1."
                 elif "E11 Type 2 diabetes mellitus" in consequents:
                     return "Tingkatkan pengawasan terhadap pasien berusia 35-54 tahun yang mengalami diabetes tipe 2."
+                elif "No Complications" in consequents:
+                    return "Pertimbangkan pemantauan tambahan pada pasien usia 35-54 tahun untuk mencegah komplikasi."
+                elif "With Complications" in consequents:
+                    return "Tingkatkan pengawasan pada pasien usia 35-54 tahun yang mengalami komplikasi."
             
             if "Age_55-64" in antecedents:
                 if "Female" in consequents:
@@ -211,6 +232,10 @@ if uploaded_file:
                     return "Tingkatkan pengawasan terhadap pasien berusia 55-64 tahun yang mengalami diabetes tipe 1."
                 elif "E11 Type 2 diabetes mellitus" in consequents:
                     return "Tingkatkan pengawasan terhadap pasien berusia 55-64 tahun yang mengalami diabetes tipe 2."
+                elif "No Complications" in consequents:
+                    return "Pertimbangkan pemantauan tambahan pada pasien usia 55-64 tahun untuk mencegah komplikasi."
+                elif "With Complications" in consequents:
+                    return "Tingkatkan pengawasan pada pasien usia 55-64 tahun yang mengalami komplikasi."
             
             if "Age_>65" in antecedents:
                 if "Female" in consequents:
@@ -221,18 +246,38 @@ if uploaded_file:
                     return "Tingkatkan pengawasan terhadap pasien berusia di atas 65 tahun yang mengalami diabetes tipe 1."
                 elif "E11 Type 2 diabetes mellitus" in consequents:
                     return "Tingkatkan pengawasan terhadap pasien berusia di atas 65 tahun yang mengalami diabetes tipe 2."
+                elif "No Complications" in consequents:
+                    return "Pertimbangkan pemantauan tambahan pada pasien di atas 65 tahun untuk mencegah komplikasi."
+                elif "With Complications" in consequents:
+                    return "Tingkatkan pengawasan pada pasien usia di atas 65 tahun yang mengalami komplikasi."
             
             if "E10 Type 1 diabetes mellitus" in antecedents:
                 if "Male" in consequents:
                     return "Pasien pria dengan diabetes tipe 1 memerlukan perhatian lebih pada pengelolaan diabetes."
                 elif "With Complications" in consequents:
                     return "Monitor pasien dengan diabetes tipe 1 untuk kemungkinan komplikasi lebih lanjut."
+                elif "Age_19-34" in consequents:
+                    return "Pantau usia dewasa muda yang mengalami diabetes tipe 1"
+                elif "Age_35-54" in consequents:
+                    return "Berikan perhatian khusus pada pasien diabetes tipe 1 untuk deteksi dini."
+                elif "Age_55-64" in consequents:
+                    return "Tingkatkan pengawasan terhadap pasien diabetes tipe 1 di usia produktif"
+                elif "Age_>65" in consequents:
+                    return "Prioritaskan pemantauan pasien diabetes tipe 1 berusia di atas 65 tahun untuk risiko kesehatan."
             
             if "E11 Type 2 diabetes mellitus" in antecedents:
                 if "Female" in consequents:
                     return "Berikan dukungan tambahan untuk wanita dengan diabetes tipe 2."
                 elif "With Complications" in consequents:
                     return "Pantau secara ketat pasien dengan diabetes tipe 2 untuk mengurangi risiko komplikasi."
+                elif "Age_19-34" in consequents:
+                    return "Pantau usia dewasa muda yang mengalami diabetes tipe 2"
+                elif "Age_35-54" in consequents:
+                    return "Berikan perhatian khusus pada pasien diabetes tipe 2 untuk deteksi dini."
+                elif "Age_55-64" in consequents:
+                    return "Tingkatkan pengawasan terhadap pasien diabetes tipe 2 di usia produktif"
+                elif "Age_>65" in consequents:
+                    return "Prioritaskan pemantauan pasien diabetes tipe 2 berusia di atas 65 tahun untuk risiko kesehatan."
             
             if "E10 Type 1 diabetes mellitus" in antecedents and "Komplikasi_Yes" in consequents:
                 return "Pantau pasien dengan diabetes tipe 1 secara ketat untuk mencegah komplikasi."
